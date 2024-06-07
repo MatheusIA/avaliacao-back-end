@@ -1,0 +1,17 @@
+# compiled output
+/dist
+/node_modules
+/build
+
+# IDEs and editors
+/.idea
+
+# IDE - VSCode
+.vscode/
+
+# temp directory
+.temp
+.tmp
+
+# dotenv environment variable files
+.env
