@@ -1,45 +1,52 @@
 import { Injectable } from "@nestjs/common";
-import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
 import { UsersRepository } from "../repositories/users-repository";
 import { HashGenerator } from "../cryptography/hash-generator";
 import { ValidateCPF } from "../validations/validate-cpf";
-import { passwordValidation } from "../validations/password-validation";
 import { removeCpfMask } from "../validations/remove-cpf-mask";
+import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
+import { passwordValidation } from "../validations/password-validation";
+import { UserNotFoundError } from "./errors/user-not-found-error";
 import { User } from "@/entities/user/user.entity";
 
-interface RegisterUserUseCaseRequest {
+interface EditUserUseCaseRequest {
+  id: string;
   name: string;
-  CPF: string;
   email: string;
+  CPF: string;
   password: string;
-  active: boolean;
 }
 
-interface RegisterUserUseCaseResponse {
+interface EditUserUseCaseResponse {
   user: User;
 }
 
 @Injectable()
-export class RegisterUserUseCase {
+export class EditUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private hashGenerator: HashGenerator,
   ) {}
 
   async execute({
+    id,
     name,
     email,
-    password,
     CPF,
-    active,
-  }: RegisterUserUseCaseRequest): Promise<RegisterUserUseCaseResponse> {
+    password,
+  }: EditUserUseCaseRequest): Promise<EditUserUseCaseResponse> {
+    const user = await this.usersRepository.findById(parseInt(id, 10));
+
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
     ValidateCPF(CPF);
 
     const cleanCPF = removeCpfMask(CPF);
 
     const userWithSameCPF = await this.usersRepository.findByCPF(cleanCPF);
 
-    if (userWithSameCPF !== null) {
+    if (userWithSameCPF && userWithSameCPF.id !== parseInt(id, 10)) {
       throw new UserAlreadyExistsError();
     }
 
@@ -47,15 +54,12 @@ export class RegisterUserUseCase {
 
     const hashedPassword = await this.hashGenerator.hash(password);
 
-    const user = User.create({
-      name,
-      email,
-      password: hashedPassword,
-      CPF: cleanCPF,
-      active,
-    });
+    user.name = name;
+    user.CPF = cleanCPF;
+    user.email = email;
+    user.password = hashedPassword;
 
-    await this.usersRepository.create(user);
+    await this.usersRepository.updateUser(user);
 
     return {
       user,

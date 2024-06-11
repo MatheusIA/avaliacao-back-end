@@ -3,17 +3,20 @@ import { Body, Controller, HttpCode, Post, UsePipes } from "@nestjs/common";
 import { z } from "zod";
 import { ZodValidationPipe } from "@/pipes/zod-validation-pipes";
 import { RegisterUserUseCase } from "@/domain/application/use-cases/register-user";
+import { Public } from "@/infra/auth/public";
 
 const createUserBodySchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string(),
   CPF: z.string(),
+  active: z.boolean(),
 });
 
 type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 
-@Controller("users")
+@Controller("/users")
+@Public()
 export class CreateUsersController {
   constructor(private registerUser: RegisterUserUseCase) {}
 
@@ -21,13 +24,14 @@ export class CreateUsersController {
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createUserBodySchema))
   async create(@Body() body: CreateUserBodySchema) {
-    const { name, email, password, CPF } = body;
+    const { name, email, password, CPF, active } = body;
 
     const result = await this.registerUser.execute({
       name,
       email,
       password,
       CPF,
+      active,
     });
 
     return {

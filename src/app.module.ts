@@ -1,13 +1,10 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-// import { UsersController } from "./infra/http/controllers/create-users.controller";
 import { ConfigModule } from "@nestjs/config";
 import { envSchema } from "./env";
 import { HttpModule } from "./infra/http/http.module";
 import { AuthModule } from "./infra/auth/auth.module";
-import { AuthenticateController } from "./infra/http/controllers/authenticate/authenticate-controller";
 import { DatabaseModule } from "./infra/database/database.module";
-// import { UserModule } from "./db/entities/user/user.module";
 
 @Module({
   imports: [
@@ -28,10 +25,9 @@ import { DatabaseModule } from "./infra/database/database.module";
       migrations: ["dist/migration/*.js"],
       logging: true,
     }),
-    HttpModule,
     AuthModule,
+    HttpModule,
     DatabaseModule,
   ],
-  controllers: [AuthenticateController],
 })
 export class AppModule {}
