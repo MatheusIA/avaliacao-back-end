@@ -15,14 +15,11 @@ export class LogoutUseCase {
 
   async execute({ token }: LogoutUseCaseRequest): Promise<void> {
     await this.tokenService.invalidateToken(token);
-
-    if (process.env.NODE_ENV !== "test") {
-      await this.logsService.createLog({
-        message: `Token invalid successfully`,
-        timestamp: new Date(),
-        level: "info",
-        context: "LogoutUseCase",
-      });
-    }
+    await this.logsService.createLog({
+      message: `Token invalid successfully`,
+      timestamp: new Date(),
+      level: "info",
+      context: "LogoutUseCase",
+    });
   }
 }

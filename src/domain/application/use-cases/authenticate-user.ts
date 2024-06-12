@@ -42,14 +42,12 @@ export class AuthenticateUserUseCase {
     }
 
     if (!user || !user.active) {
-      if (process.env.NODE_ENV !== "test") {
-        await this.logsService.createLog({
-          message: "The password entered is wrong or the user is inactive",
-          timestamp: new Date(),
-          level: "error",
-          context: "AuthenticateUserUseCase",
-        });
-      }
+      await this.logsService.createLog({
+        message: "The password entered is wrong or the user is inactive",
+        timestamp: new Date(),
+        level: "error",
+        context: "AuthenticateUserUseCase",
+      });
       throw new WrongCredentialsError();
     }
 
@@ -61,14 +59,12 @@ export class AuthenticateUserUseCase {
     }
 
     if (!isPasswordValid) {
-      if (process.env.NODE_ENV !== "test") {
-        await this.logsService.createLog({
-          message: "The password entered is wrong",
-          timestamp: new Date(),
-          level: "error",
-          context: "AuthenticateUserUseCase",
-        });
-      }
+      await this.logsService.createLog({
+        message: "The password entered is wrong",
+        timestamp: new Date(),
+        level: "error",
+        context: "AuthenticateUserUseCase",
+      });
       throw new WrongCredentialsError();
     }
 
@@ -81,14 +77,12 @@ export class AuthenticateUserUseCase {
       cpf,
     });
 
-    if (process.env.NODE_ENV !== "test") {
-      await this.logsService.createLog({
-        message: `User with email ${email} accessed the system`,
-        timestamp: new Date(),
-        level: "info",
-        context: "AuthenticateUserUseCase",
-      });
-    }
+    await this.logsService.createLog({
+      message: `User with email ${email} accessed the system`,
+      timestamp: new Date(),
+      level: "info",
+      context: "AuthenticateUserUseCase",
+    });
 
     return {
       accessToken,

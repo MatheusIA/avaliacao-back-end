@@ -43,28 +43,24 @@ export class RegisterUserUseCase {
     const userWithSameCPF = await this.usersRepository.findByCPF(cleanCPF);
 
     if (userWithSameCPF !== null) {
-      if (process.env.NODE_ENV !== "test") {
-        await this.logsService.createLog({
-          message: `User with CPF ${cleanCPF} already exists.`,
-          timestamp: new Date(),
-          level: "error",
-          context: "RegisterUserUseCase",
-        });
-      }
+      await this.logsService.createLog({
+        message: `User with CPF ${cleanCPF} already exists.`,
+        timestamp: new Date(),
+        level: "error",
+        context: "RegisterUserUseCase",
+      });
       throw new UserAlreadyExistsError();
     }
 
     const userWithSameEmail = await this.usersRepository.findByEmail(email);
 
     if (userWithSameEmail !== null) {
-      if (process.env.NODE_ENV !== "test") {
-        await this.logsService.createLog({
-          message: `User with email ${email} already exists.`,
-          timestamp: new Date(),
-          level: "error",
-          context: "RegisterUserUseCase",
-        });
-      }
+      await this.logsService.createLog({
+        message: `User with email ${email} already exists.`,
+        timestamp: new Date(),
+        level: "error",
+        context: "RegisterUserUseCase",
+      });
       throw new UserEmailInvalidError();
     }
 
@@ -82,14 +78,12 @@ export class RegisterUserUseCase {
 
     await this.usersRepository.create(user);
 
-    if (process.env.NODE_ENV !== "test") {
-      await this.logsService.createLog({
-        message: `User created successfully with email: ${email}`,
-        timestamp: new Date(),
-        level: "info",
-        context: "RegisterUserUseCase",
-      });
-    }
+    await this.logsService.createLog({
+      message: `User created successfully with email: ${email}`,
+      timestamp: new Date(),
+      level: "info",
+      context: "RegisterUserUseCase",
+    });
 
     return {
       user,
