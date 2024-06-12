@@ -6,6 +6,8 @@ import { ValidateCPF } from "../validations/validate-cpf";
 import { passwordValidation } from "../validations/password-validation";
 import { removeCpfMask } from "../validations/remove-cpf-mask";
 import { User } from "@/entities/user/user.entity";
+import { UserEmailInvalidError } from "./errors/user-email-invalid-error";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 interface RegisterUserUseCaseRequest {
   name: string;
@@ -24,6 +26,7 @@ export class RegisterUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private hashGenerator: HashGenerator,
+    private logsService: LogsService,
   ) {}
 
   async execute({
@@ -40,7 +43,25 @@ export class RegisterUserUseCase {
     const userWithSameCPF = await this.usersRepository.findByCPF(cleanCPF);
 
     if (userWithSameCPF !== null) {
+      await this.logsService.createLog({
+        message: `User with CPF ${cleanCPF} already exists.`,
+        timestamp: new Date(),
+        level: "error",
+        context: "RegisterUserUseCase",
+      });
       throw new UserAlreadyExistsError();
+    }
+
+    const userWithSameEmail = await this.usersRepository.findByEmail(email);
+
+    if (userWithSameEmail !== null) {
+      await this.logsService.createLog({
+        message: `User with email ${email} already exists.`,
+        timestamp: new Date(),
+        level: "error",
+        context: "RegisterUserUseCase",
+      });
+      throw new UserEmailInvalidError();
     }
 
     passwordValidation(password);
@@ -56,6 +77,13 @@ export class RegisterUserUseCase {
     });
 
     await this.usersRepository.create(user);
+
+    await this.logsService.createLog({
+      message: `User created successfully with email: ${email}`,
+      timestamp: new Date(),
+      level: "info",
+      context: "RegisterUserUseCase",
+    });
 
     return {
       user,

@@ -4,6 +4,7 @@ import { HashComparer } from "../cryptography/hash-comparer";
 import { Encrypter } from "../cryptography/encrypter";
 import { WrongCredentialsError } from "./errors/wrong-credentials-error";
 import { RefreshTokenService } from "@/infra/cryptography/refresh-token.service";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 interface AuthenticateUserUseCaseRequest {
   email?: string;
@@ -23,6 +24,7 @@ export class AuthenticateUserUseCase {
     private hashComparer: HashComparer,
     private encrypter: Encrypter,
     private refreshTokenService: RefreshTokenService,
+    private logsService: LogsService,
   ) {}
 
   async execute({
@@ -30,47 +32,61 @@ export class AuthenticateUserUseCase {
     password,
     cpf,
   }: AuthenticateUserUseCaseRequest): Promise<AuthenticateUserUseCaseResponse> {
-    try {
-      let user;
-      let isPasswordValid = false;
+    let user;
+    let isPasswordValid = false;
 
-      if (email) {
-        user = await this.usersRepository.findByEmail(email);
-      } else if (cpf) {
-        user = await this.usersRepository.findByCPF(cpf);
-      }
-
-      if (!user || !user.active) {
-        throw new WrongCredentialsError();
-      }
-
-      if (password) {
-        isPasswordValid = await this.hashComparer.compare(
-          password,
-          user.password,
-        );
-      }
-
-      if (!isPasswordValid) {
-        throw new Error();
-      }
-
-      const accessToken = await this.encrypter.encrypt({
-        sub: user.id?.toString(),
-      });
-
-      const refreshToken = await this.refreshTokenService.generateRefreshToken({
-        email,
-        cpf,
-      });
-
-      return {
-        accessToken,
-        refreshToken,
-      };
-    } catch (error) {
-      console.error("Error in AuthenticateUserUseCase: ", error);
-      throw error;
+    if (email) {
+      user = await this.usersRepository.findByEmail(email);
+    } else if (cpf) {
+      user = await this.usersRepository.findByCPF(cpf);
     }
+
+    if (!user || !user.active) {
+      await this.logsService.createLog({
+        message: "The password entered is wrong or the user is inactive",
+        timestamp: new Date(),
+        level: "error",
+        context: "AuthenticateUserUseCase",
+      });
+      throw new WrongCredentialsError();
+    }
+
+    if (password) {
+      isPasswordValid = await this.hashComparer.compare(
+        password,
+        user.password,
+      );
+    }
+
+    if (!isPasswordValid) {
+      await this.logsService.createLog({
+        message: "The password entered is wrong",
+        timestamp: new Date(),
+        level: "error",
+        context: "AuthenticateUserUseCase",
+      });
+      throw new WrongCredentialsError();
+    }
+
+    const accessToken = await this.encrypter.encrypt({
+      sub: user.id?.toString(),
+    });
+
+    const refreshToken = await this.refreshTokenService.generateRefreshToken({
+      email,
+      cpf,
+    });
+
+    await this.logsService.createLog({
+      message: `User with email ${email} accessed the system`,
+      timestamp: new Date(),
+      level: "info",
+      context: "AuthenticateUserUseCase",
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

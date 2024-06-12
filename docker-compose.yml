@@ -10,3 +10,25 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: avaliable-nest
+
+  mongodb:
+        image: mongo:latest
+        container_name: mongodb
+        restart: always
+        environment:
+            MONGO_URL: "mongodb+srv://userroot:ibt3rH8aiugLMBdC@cluster0.ksgmxxl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+        ports:
+            - 27017:27017
+        volumes:
+            - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      
+  # superheroes_db:
+  #   container_name: superheroes_db
+  #   image: bitnami/postgresql
+  #   ports:
+  #     - 5433:5432
+  #   environment:
+  #     POSTGRES_USER: docker
+  #     POSTGRES_PASSWORD: teste
+  #     POSTGRES_DB: superhero
+

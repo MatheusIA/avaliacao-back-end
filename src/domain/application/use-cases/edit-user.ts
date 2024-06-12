@@ -7,6 +7,7 @@ import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
 import { passwordValidation } from "../validations/password-validation";
 import { UserNotFoundError } from "./errors/user-not-found-error";
 import { User } from "@/entities/user/user.entity";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 interface EditUserUseCaseRequest {
   id: string;
@@ -25,6 +26,7 @@ export class EditUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private hashGenerator: HashGenerator,
+    private logsService: LogsService,
   ) {}
 
   async execute({
@@ -37,6 +39,12 @@ export class EditUserUseCase {
     const user = await this.usersRepository.findById(parseInt(id, 10));
 
     if (!user) {
+      await this.logsService.createLog({
+        message: `User not found`,
+        timestamp: new Date(),
+        level: "error",
+        context: "EditUserUseCase",
+      });
       throw new UserNotFoundError();
     }
 
@@ -47,6 +55,12 @@ export class EditUserUseCase {
     const userWithSameCPF = await this.usersRepository.findByCPF(cleanCPF);
 
     if (userWithSameCPF && userWithSameCPF.id !== parseInt(id, 10)) {
+      await this.logsService.createLog({
+        message: `User with CPF ${cleanCPF} already exists.`,
+        timestamp: new Date(),
+        level: "error",
+        context: "EditUserUseCase",
+      });
       throw new UserAlreadyExistsError();
     }
 
@@ -60,6 +74,13 @@ export class EditUserUseCase {
     user.password = hashedPassword;
 
     await this.usersRepository.updateUser(user);
+
+    await this.logsService.createLog({
+      message: `User updated successfully`,
+      timestamp: new Date(),
+      level: "info",
+      context: "EditUserUseCase",
+    });
 
     return {
       user,

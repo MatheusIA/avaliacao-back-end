@@ -1,8 +1,9 @@
-import { User } from "@/entities/user/user.entity";
 import { Injectable } from "@nestjs/common";
 import { UsersRepository } from "../repositories/users-repository";
 import { UserNotFoundError } from "./errors/user-not-found-error";
 import { TokenService } from "@/entities/tokens/invalid-token.service";
+import { User } from "@/entities/user/user.entity";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 interface DisableUserUseCaseRequest {
   id: number;
@@ -19,6 +20,7 @@ export class DisableUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private tokenService: TokenService,
+    private logsService: LogsService,
   ) {}
 
   async execute({
@@ -29,6 +31,12 @@ export class DisableUserUseCase {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
+      await this.logsService.createLog({
+        message: `User not found`,
+        timestamp: new Date(),
+        level: "error",
+        context: "DisableUserUseCase",
+      });
       throw new UserNotFoundError();
     }
 
@@ -36,7 +44,20 @@ export class DisableUserUseCase {
 
     await this.usersRepository.updateUser(user);
 
+    await this.logsService.createLog({
+      message: `User updated successfully`,
+      timestamp: new Date(),
+      level: "info",
+      context: "DisableUserUseCase",
+    });
+
     await this.tokenService.invalidateToken(token);
+    await this.logsService.createLog({
+      message: `Token invalid successfully`,
+      timestamp: new Date(),
+      level: "info",
+      context: "DisableUserUseCase",
+    });
 
     return {
       user,

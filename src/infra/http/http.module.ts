@@ -16,9 +16,11 @@ import { LogoutUseCase } from "@/domain/application/use-cases/logout";
 import { InvalidTokenModule } from "@/entities/tokens/invalid-token.module";
 import { DisableUserController } from "./controllers/user/disable-users.controller";
 import { DisableUserUseCase } from "@/domain/application/use-cases/disable-user";
+import { LogsModule } from "@/logs/logs.module";
+// import { SuperHeroController } from "./controllers/super-hero/super-hero.controller";
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule, InvalidTokenModule],
+  imports: [DatabaseModule, CryptographyModule, InvalidTokenModule, LogsModule],
   controllers: [
     CreateUsersController,
     AuthenticateController,
@@ -27,6 +29,7 @@ import { DisableUserUseCase } from "@/domain/application/use-cases/disable-user"
     RefreshTokenController,
     LogoutController,
     DisableUserController,
+    // SuperHeroController,
   ],
   providers: [
     RegisterUserUseCase,
