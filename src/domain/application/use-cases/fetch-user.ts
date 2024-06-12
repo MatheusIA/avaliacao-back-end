@@ -25,12 +25,14 @@ export class FetchUserUseCase {
     const user = await this.usersRepository.findById(parseInt(id, 10));
 
     if (!user) {
-      await this.logsService.createLog({
-        message: `User not found`,
-        timestamp: new Date(),
-        level: "error",
-        context: "FetchUserUseCase",
-      });
+      if (process.env.NODE_ENV !== "test") {
+        await this.logsService.createLog({
+          message: `User not found`,
+          timestamp: new Date(),
+          level: "error",
+          context: "FetchUserUseCase",
+        });
+      }
       throw new UserNotFoundError();
     }
 

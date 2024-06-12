@@ -4,8 +4,10 @@ import { RegisterUserUseCase } from "./register-user";
 import { FakeHasher } from "@/test/cryptography/fake-hasher";
 import { UserAlreadyExistsError } from "./errors/user-already-exists-error";
 import { compare, hash } from "bcryptjs";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 let usersRepository: InMemoryUsersRepository;
+let logsService: LogsService;
 let fakeHasher: FakeHasher;
 let sut: RegisterUserUseCase;
 
@@ -13,7 +15,7 @@ describe("Register User Use Case", () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository();
     fakeHasher = new FakeHasher();
-    sut = new RegisterUserUseCase(usersRepository, fakeHasher);
+    sut = new RegisterUserUseCase(usersRepository, fakeHasher, logsService);
   });
 
   it("should be create a user", async () => {

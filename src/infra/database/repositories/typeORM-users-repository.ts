@@ -57,6 +57,12 @@ export class TypeORMUsersRepository implements UsersRepository {
     return user;
   }
 
+  async findAll(): Promise<User[] | null> {
+    const users = await this.ormRepository.find();
+
+    return users;
+  }
+
   async updateUser(data: User) {
     try {
       await this.ormRepository.update(data.id, data);

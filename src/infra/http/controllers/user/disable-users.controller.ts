@@ -21,7 +21,7 @@ const validationPipe = new ZodValidationPipe(statusUserSchema);
 
 type StatusUserSchema = z.infer<typeof statusUserSchema>;
 
-@ApiTags("users")
+@ApiTags("Users")
 @Controller("/users/disable")
 @ApiBearerAuth()
 export class DisableUserController {

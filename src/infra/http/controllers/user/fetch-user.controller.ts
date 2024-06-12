@@ -10,8 +10,8 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-@ApiTags("users")
-@Controller("/fetchUser")
+@ApiTags("Users")
+@Controller("/user/fetchUser")
 @ApiBearerAuth()
 export class FetchUserController {
   constructor(private fetchUser: FetchUserUseCase) {}

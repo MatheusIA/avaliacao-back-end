@@ -23,7 +23,7 @@ const bodyValidationPipe = new ZodValidationPipe(editUserSchema);
 
 type EditUserSchema = z.infer<typeof editUserSchema>;
 
-@ApiTags("users")
+@ApiTags("Users")
 @Controller("/user/update/:id")
 @ApiBearerAuth()
 export class EditUserController {

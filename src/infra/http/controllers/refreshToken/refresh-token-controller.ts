@@ -8,7 +8,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-@ApiTags("refreshToken")
+@ApiTags("Refresh_Token")
 @Controller("/refresh")
 export class RefreshTokenController {
   constructor(private refreshTokenUseCase: RefreshTokenUseCase) {}

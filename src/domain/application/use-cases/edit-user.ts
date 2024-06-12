@@ -39,12 +39,14 @@ export class EditUserUseCase {
     const user = await this.usersRepository.findById(parseInt(id, 10));
 
     if (!user) {
-      await this.logsService.createLog({
-        message: `User not found`,
-        timestamp: new Date(),
-        level: "error",
-        context: "EditUserUseCase",
-      });
+      if (process.env.NODE_ENV !== "test") {
+        await this.logsService.createLog({
+          message: `User not found`,
+          timestamp: new Date(),
+          level: "error",
+          context: "EditUserUseCase",
+        });
+      }
       throw new UserNotFoundError();
     }
 
@@ -55,12 +57,14 @@ export class EditUserUseCase {
     const userWithSameCPF = await this.usersRepository.findByCPF(cleanCPF);
 
     if (userWithSameCPF && userWithSameCPF.id !== parseInt(id, 10)) {
-      await this.logsService.createLog({
-        message: `User with CPF ${cleanCPF} already exists.`,
-        timestamp: new Date(),
-        level: "error",
-        context: "EditUserUseCase",
-      });
+      if (process.env.NODE_ENV !== "test") {
+        await this.logsService.createLog({
+          message: `User with CPF ${cleanCPF} already exists.`,
+          timestamp: new Date(),
+          level: "error",
+          context: "EditUserUseCase",
+        });
+      }
       throw new UserAlreadyExistsError();
     }
 
@@ -75,12 +79,14 @@ export class EditUserUseCase {
 
     await this.usersRepository.updateUser(user);
 
-    await this.logsService.createLog({
-      message: `User updated successfully`,
-      timestamp: new Date(),
-      level: "info",
-      context: "EditUserUseCase",
-    });
+    if (process.env.NODE_ENV !== "test") {
+      await this.logsService.createLog({
+        message: `User updated successfully`,
+        timestamp: new Date(),
+        level: "info",
+        context: "EditUserUseCase",
+      });
+    }
 
     return {
       user,

@@ -1,14 +1,16 @@
 import { InMemoryUsersRepository } from "@/test/repositories/in-memory-users-repository";
 import { FetchUserUseCase } from "./fetch-user";
 import { UserNotFoundError } from "./errors/user-not-found-error";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 let usersRepository: InMemoryUsersRepository;
+let logsService: LogsService;
 let sut: FetchUserUseCase;
 
 describe("Get User Use Case", async () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository();
-    sut = new FetchUserUseCase(usersRepository);
+    sut = new FetchUserUseCase(usersRepository, logsService);
   });
 
   it("should be able to fetch user", async () => {

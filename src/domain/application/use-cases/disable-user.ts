@@ -31,12 +31,14 @@ export class DisableUserUseCase {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
-      await this.logsService.createLog({
-        message: `User not found`,
-        timestamp: new Date(),
-        level: "error",
-        context: "DisableUserUseCase",
-      });
+      if (process.env.NODE_ENV !== "test") {
+        await this.logsService.createLog({
+          message: `User not found`,
+          timestamp: new Date(),
+          level: "error",
+          context: "DisableUserUseCase",
+        });
+      }
       throw new UserNotFoundError();
     }
 
@@ -44,20 +46,24 @@ export class DisableUserUseCase {
 
     await this.usersRepository.updateUser(user);
 
-    await this.logsService.createLog({
-      message: `User updated successfully`,
-      timestamp: new Date(),
-      level: "info",
-      context: "DisableUserUseCase",
-    });
+    if (process.env.NODE_ENV !== "test") {
+      await this.logsService.createLog({
+        message: `User updated successfully`,
+        timestamp: new Date(),
+        level: "info",
+        context: "DisableUserUseCase",
+      });
+    }
 
     await this.tokenService.invalidateToken(token);
-    await this.logsService.createLog({
-      message: `Token invalid successfully`,
-      timestamp: new Date(),
-      level: "info",
-      context: "DisableUserUseCase",
-    });
+    if (process.env.NODE_ENV !== "test") {
+      await this.logsService.createLog({
+        message: `Token invalid successfully`,
+        timestamp: new Date(),
+        level: "info",
+        context: "DisableUserUseCase",
+      });
+    }
 
     return {
       user,

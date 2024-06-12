@@ -8,7 +8,7 @@ import {
 } from "@nestjs/swagger";
 import { Request } from "express";
 
-@ApiTags("logout")
+@ApiTags("Logout")
 @Controller()
 @ApiBearerAuth()
 export class LogoutController {

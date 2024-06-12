@@ -16,8 +16,8 @@ const createUserBodySchema = z.object({
 
 type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 
-@ApiTags("users")
-@Controller("/users")
+@ApiTags("Users")
+@Controller("/users/create")
 @Public()
 export class CreateUsersController {
   constructor(private registerUser: RegisterUserUseCase) {}

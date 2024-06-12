@@ -5,8 +5,10 @@ import { FakeHasher } from "@/test/cryptography/fake-hasher";
 import { FakeEncrypter } from "@/test/cryptography/fake-encrypter";
 import { RefreshTokenService } from "@/infra/cryptography/refresh-token.service";
 import { JwtService } from "@nestjs/jwt";
+import { LogsService } from "@/logs/schemas/logs.service";
 
 let usersRepository: InMemoryUsersRepository;
+let logsService: LogsService;
 let fakeHasher: FakeHasher;
 let fakeEncrypter: FakeEncrypter;
 let refreshToken: RefreshTokenService;
@@ -28,6 +30,7 @@ describe("Authenticate Use Case", async () => {
       fakeHasher,
       fakeEncrypter,
       refreshToken,
+      logsService,
     );
   });
 

@@ -17,6 +17,8 @@ import { InvalidTokenModule } from "@/entities/tokens/invalid-token.module";
 import { DisableUserController } from "./controllers/user/disable-users.controller";
 import { DisableUserUseCase } from "@/domain/application/use-cases/disable-user";
 import { LogsModule } from "@/logs/logs.module";
+import { FetchAllUserController } from "./controllers/user/fetch-all-users.controller";
+import { FetchAllUserUseCase } from "@/domain/application/use-cases/fetch-all-users";
 // import { SuperHeroController } from "./controllers/super-hero/super-hero.controller";
 
 @Module({
@@ -29,6 +31,7 @@ import { LogsModule } from "@/logs/logs.module";
     RefreshTokenController,
     LogoutController,
     DisableUserController,
+    FetchAllUserController,
     // SuperHeroController,
   ],
   providers: [
@@ -39,6 +42,7 @@ import { LogsModule } from "@/logs/logs.module";
     RefreshTokenUseCase,
     LogoutUseCase,
     DisableUserUseCase,
+    FetchAllUserUseCase,
   ],
 })
 export class HttpModule {}

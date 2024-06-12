@@ -14,8 +14,8 @@ const authenticateBodySchema = z.object({
 
 type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>;
 
-@ApiTags("authenticate")
-@Controller("/sessions")
+@ApiTags("Authenticate")
+@Controller("/authenticate/sessions")
 @Public()
 export class AuthenticateController {
   constructor(private authenticateUser: AuthenticateUserUseCase) {}

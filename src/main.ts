@@ -7,15 +7,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle("Documentação com Swagger - Fábrica de Sinapse")
+    .setTitle("Documentação com Swagger - Avaliação Back End")
     .setDescription(
-      "O Swagger (aka OpenApi) é uma biblioteca muito conhecida no universo backend, estando disponível para diversas linguagens e frameworks. Ela gera um site interno no seu backend que descreve, com muitos detalhes, cada endpoint e estrutura de entidades presentes na sua aplicação.",
+      `Recursos Disponivies:
+        Usuário: Criação, Atualização, Deleção e Listar os usuários disponiveis.
+        Autenticação: Autenticação feita através de JWT Token.
+        Refresh Token,
+        Logout do sistema
+      `,
     )
     .setVersion("1.0")
-    .addTag("authenticate")
-    .addTag("logout")
-    .addTag("refreshToken")
-    .addTag("users")
+    .addTag("Authenticate")
+    .addTag("Logout")
+    .addTag("Refresh_Token")
+    .addTag("Users")
     .addBearerAuth()
     .build();
 
