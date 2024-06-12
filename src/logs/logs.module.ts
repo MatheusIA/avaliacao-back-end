@@ -7,9 +7,7 @@ import { Log, LogSchema } from "./schemas/log.schema";
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      "mongodb+srv://userroot:ibt3rH8aiugLMBdC@ac-o7piu9e.ksgmxxl.mongodb.net/mydatabase?retryWrites=true&w=majority",
-    ),
+    MongooseModule.forRoot(process.env.MONGOSE_URL || ""),
     MongooseModule.forFeature([{ name: Log.name, schema: LogSchema }]),
   ],
   /// controllers: [LogsController],
